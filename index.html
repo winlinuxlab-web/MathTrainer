@@ -6,6 +6,9 @@
 <title>MathTrainer - Módulo Potencias</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<!-- Incluimos MathJax para renderizar expresiones matemáticas -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <style>
 :root {
   --primary-blue: #00d2ff;
@@ -113,9 +116,9 @@ header {
 .dc-value { font-size: 1.2rem; font-weight: 700; font-family: 'Share Tech Mono'; }
 
 .question-text {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   margin-bottom: 1.5rem;
-  line-height: 1.4;
+  line-height: 1.6;
   border-left: 4px solid var(--primary-blue);
   padding-left: 1rem;
 }
@@ -260,132 +263,119 @@ function getRandomInt(min, max) {
 
 function generateQuestions() {
     questions = [];
-    // Generador dinámico basado en 10 plantillas maestras que varían sus parámetros numéricos
     
-    // 1. Multiplicación de potencias de igual base: a^n * a^m = a^(n+m)
     let base1 = getRandomInt(2, 5);
     let n1 = getRandomInt(2, 4);
     let m1 = getRandomInt(2, 4);
     let ans1 = Math.pow(base1, n1 + m1);
     questions.push({
         type: 'IGUAL BASE (MULTIPLICACIÓN)',
-        text: `Evalúa y calcula el valor numérico de la expresión: $${base1}^{${n1}} \\cdot ${base1}^{${m1}}$`,
-        hint: `Conserva la base ($${base1}$) y suma los exponentes: $${n1} + ${m1}$.`,
+        text: `Evalúa y calcula el valor numérico de la expresión: \\[${base1}^{${n1}} \\cdot ${base1}^{${m1}}\\]`,
+        hint: `Conserva la base (${base1}) y suma los exponentes: ${n1} + ${m1}.`,
         data: [{l: 'Base', v: base1}, {l: 'Exp 1', v: n1}, {l: 'Exp 2', v: m1}],
         ans: ans1,
         unit: 'Valor'
     });
 
-    // 2. División de potencias de igual base: a^n / a^m = a^(n-m)
     let base2 = getRandomInt(2, 4);
     let n2 = getRandomInt(5, 7);
     let m2 = getRandomInt(2, 4);
     let ans2 = Math.pow(base2, n2 - m2);
     questions.push({
         type: 'IGUAL BASE (DIVISIÓN)',
-        text: `Calcula el valor de la división de potencias: $\\frac{${base2}^{${n2}}}{${base2}^{${m2}}}$`,
-        hint: `Conserva la base y resta los exponentes en el orden numerador menos denominador: $${n2} - ${m2}$.`,
+        text: `Calcula el valor de la división de potencias: \\[\\frac{${base2}^{${n2}}}{${base2}^{${m2}}}\\]`,
+        hint: `Conserva la base y resta los exponentes: ${n2} - ${m2}.`,
         data: [{l: 'Base', v: base2}, {l: 'Numerador', v: n2}, {l: 'Denominador', v: m2}],
         ans: ans2,
         unit: 'Valor'
     });
 
-    // 3. Potencia de una potencia: (a^n)^m = a^(n*m)
     let base3 = getRandomInt(2, 3);
     let n3 = getRandomInt(2, 3);
     let m3 = 2;
     let ans3 = Math.pow(base3, n3 * m3);
     questions.push({
         type: 'POTENCIA DE POTENCIA',
-        text: `Calcula el valor de la expresión con paréntesis: $(${base3}^{${n3}})^{${m3}}$`,
-        hint: `Multiplica los exponentes entre sí: $${n3} \\cdot ${m3}$.`,
+        text: `Calcula el valor de la expresión con paréntesis: \\[(${base3}^{${n3}})^{${m3}}\\]`,
+        hint: `Multiplica los exponentes entre sí: ${n3} \\cdot ${m3}.`,
         data: [{l: 'Base', v: base3}, {l: 'Exp Interno', v: n3}, {l: 'Exp Externo', v: m3}],
         ans: ans3,
         unit: 'Valor'
     });
 
-    // 4. Multiplicación de igual exponente: a^n * b^n = (a*b)^n
     let a4 = getRandomInt(2, 4);
     let b4 = getRandomInt(2, 3);
     let n4 = 3;
     let ans4 = Math.pow(a4 * b4, n4);
     questions.push({
         type: 'IGUAL EXPONENTE (MULTIPLICACIÓN)',
-        text: `Halla el resultado de: $${a4}^{${n4}} \\cdot ${b4}^{${n4}}$`,
-        hint: `Agrupa las bases bajo el mismo exponente común: $(${a4} \\cdot ${b4})^{${n4}}$.`,
+        text: `Halla el resultado de: \\[${a4}^{${n4}} \\cdot ${b4}^{${n4}}\\]`,
+        hint: `Agrupa las bases bajo el mismo exponente común: (${a4} \\cdot ${b4})^{${n4}}.`,
         data: [{l: 'Base A', v: a4}, {l: 'Base B', v: b4}, {l: 'Exponente', v: n4}],
         ans: ans4,
         unit: 'Valor'
     });
 
-    // 5. Exponente cero: a^0 = 1
     let base5 = getRandomInt(12, 99);
     let ans5 = 1;
     questions.push({
         type: 'EXPONENTE CERO',
-        text: `Calcula el valor numérico de la expresión: $(${base5})^{0}$`,
+        text: `Calcula el valor numérico de la expresión: \\[(${base5})^{0}\\]`,
         hint: `Todo número distinto de cero elevado a exponente 0 es siempre igual a 1.`,
         data: [{l: 'Base', v: base5}, {l: 'Exponente', v: 0}],
         ans: ans5,
         unit: 'Valor'
     });
 
-    // 6. Exponente negativo entero: a^(-n) = 1 / a^n (o fracción decimal exacta)
     let base6 = 2;
     let n6 = 3;
     let ans6 = 1 / Math.pow(base6, n6);
     questions.push({
         type: 'EXPONENTE NEGATIVO',
-        text: `Calcula el valor decimal o fraccionario exacto de: $${base6}^{-${n6}}$`,
-        hint: `Invierte la base transformándola en fracción: $\\frac{1}{${base6}^{${n6}}}$.`,
+        text: `Calcula el valor decimal o fraccionario exacto de: \\[${base6}^{-${n6}}\\]`,
+        hint: `Invierte la base transformándola en fracción: \\frac{1}{${base6}^{${n6}}}.`,
         data: [{l: 'Base', v: base6}, {l: 'Exponente', v: `-${n6}`}],
         ans: parseFloat(ans6.toFixed(4)),
         unit: 'Decimal'
     });
 
-    // 7. Combinación de operaciones elementales de potencias
-    let base7 = 2;
-    // (2^3 * 2^2) / 2^4 = 2^(3+2-4) = 2^1 = 2
     let ans7 = 2;
     questions.push({
         type: 'OPERATORIA COMBINADA',
-        text: `Resuelve y encuentra el valor de: $\\frac{2^{3} \\cdot 2^{2}}{2^{4}}$`,
-        hint: `Primero suma los exponentes arriba ($3+2$), y luego resta el exponente de abajo.`,
+        text: `Resuelve y encuentra el valor de: \\[\\frac{2^{3} \\cdot 2^{2}}{2^{4}}\\]`,
+        hint: `Primero suma los exponentes arriba (3+2), y luego resta el exponente de abajo.`,
         data: [{l: 'Estructura', v: 'Combinada'}],
         ans: ans7,
         unit: 'Valor'
     });
 
-    // 8. Ecuación exponencial simple
     let base8 = 3;
-    let ans8 = 3; // 3^x = 27 -> x = 3
+    let ans8 = 3;
     questions.push({
         type: 'ECUACIÓN EXPONENCIAL',
-        text: `Determina el valor de $x$ que satisface la igualdad: $${base8}^{x} = 27$`,
-        hint: `Busca cuántas veces debes multiplicar $${base8}$ por sí mismo para obtener 27.`,
+        text: `Determina el valor de $x$ que satisface la igualdad: \\[${base8}^{x} = 27\\]`,
+        hint: `Busca cuántas veces debes multiplicar ${base8} por sí mismo para obtener 27.`,
         data: [{l: 'Ecuación', v: `${base8}^x = 27`}],
         ans: ans8,
         unit: 'x'
     });
 
-    // 9. Potencia con base fraccionaria
     let num9 = 2, den9 = 3, exp9 = 2;
     let ans9 = Math.pow(num9/den9, exp9);
     questions.push({
         type: 'BASE FRACCIONARIA',
-        text: `Calcula el valor decimal redondeado a dos cifras de: $(\\frac{${num9}}{${den9}})^{${exp9}}$`,
-        hint: `Eleva tanto el numerador como el denominador al exponente $${exp9}$.`,
+        text: `Calcula el valor decimal redondeado a dos cifras de: \\[(\\frac{${num9}}{${den9}})^{${exp9}}\\]`,
+        hint: `Eleva tanto el numerador como el denominador al exponente ${exp9}.`,
         data: [{l: 'Numerador', v: num9}, {l: 'Denominador', v: den9}, {l: 'Exponente', v: exp9}],
         ans: parseFloat(ans9.toFixed(2)),
         unit: 'Decimal'
     });
 
-    // 10. Descomposición y propiedad distributiva de potencias
-    let ans10 = 8; // 2^3
+    let ans10 = 8;
     questions.push({
         type: 'ANÁLISIS CONCEPTUAL',
-        text: `Si $2^{x} = 4$, ¿cuál es el valor de la expresión $2^{x+1}$?`,
-        hint: `Propiedad de suma en el exponente: $2^{x} \\cdot 2^{1}$. Sustituye el valor de $2^x$.`,
+        text: `Si $2^{x} = 4$, ¿cuál es el valor de la expresión \\[2^{x+1}\\]?`,
+        hint: `Propiedad de suma en el exponente: 2^{x} \\cdot 2^{1}. Sustituye el valor de 2^x.`,
         data: [{l: 'Condición', v: '2^x = 4'}],
         ans: ans10,
         unit: 'Valor'
@@ -413,6 +403,11 @@ function render() {
     
     const grid = document.getElementById('data-grid');
     grid.innerHTML = q.data.map(d => `<div class="data-chip"><div class="dc-label">${d.l}</div><div class="dc-value">${d.v}</div></div>`).join('');
+
+    // Le indicamos a MathJax que procese las nuevas fórmulas inyectadas en el DOM
+    if (window.MathJax) {
+        MathJax.typesetPromise();
+    }
 }
 
 function check() {
