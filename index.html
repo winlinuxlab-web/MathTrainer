@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathTrainer - Módulo Potencias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary-blue: #00d2ff;
+  --primary-yellow: #f1c40f;
+  --bg-dark: #0b0f19;
+  --panel: #131b2e;
+  --white: #ffffff;
+  --gray: #8892b0;
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --border: rgba(0, 210, 255, 0.3);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg-dark);
+  color: var(--white);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#app {
+  width: 100%;
+  max-width: 800px;
+  padding: 2rem 1rem;
+}
+
+header {
+  text-align: center;
+  border-bottom: 3px solid var(--primary-blue);
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+}
+
+.inst-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin-bottom: 0.2rem;
+  color: var(--primary-blue);
+  letter-spacing: 2px;
+}
+
+.inst-dept {
+  font-size: 1rem;
+  letter-spacing: 0.25em;
+  color: var(--primary-yellow);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.sub-title {
+  font-size: 1.2rem;
+  color: var(--white);
+  font-weight: 600;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+}
+
+.credit-line {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-top: 0.4rem;
+  font-style: italic;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.q-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
+}
+
+.q-badge { background: var(--primary-blue); color: #000; font-weight: 700; padding: 0.4rem 0.8rem; }
+
+.data-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.data-chip {
+  background: #1b2642;
+  border-left: 3px solid var(--primary-yellow);
+  padding: 0.6rem 1rem;
+  min-width: 110px;
+}
+
+.dc-label { font-size: 0.7rem; color: var(--primary-yellow); text-transform: uppercase; }
+.dc-value { font-size: 1.2rem; font-weight: 700; font-family: 'Share Tech Mono'; }
+
+.question-text {
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+  border-left: 4px solid var(--primary-blue);
+  padding-left: 1rem;
+}
+
+.input-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.answer-input {
+  flex: 1;
+  background: #1a233a;
+  border: 2px solid #2a3a5e;
+  padding: 1rem;
+  color: white;
+  font-size: 1.5rem;
+  font-family: 'Share Tech Mono';
+  outline: none;
+  border-radius: 4px;
+}
+
+.answer-input:focus { border-color: var(--primary-blue); }
+
+.unit-tag {
+  background: #1a233a;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: var(--primary-yellow);
+  font-size: 1.2rem;
+  border-radius: 4px;
+}
+
+.feedback {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  display: none;
+}
+
+.hint-box {
+  background: rgba(0, 210, 255, 0.08);
+  border: 1px dashed var(--primary-blue);
+  padding: 0.8rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: #79c0ff;
+}
+
+.btn {
+  width: 100%;
+  padding: 1rem;
+  font-family: 'Orbitron';
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  transition: 0.3s;
+}
+
+.btn-primary { background: var(--primary-blue); color: #000; }
+.btn-primary:hover { background: #00b0d4; }
+
+.nota-display {
+  font-family: 'Orbitron';
+  font-size: 5rem;
+  text-align: center;
+  margin: 1rem 0;
+  color: var(--primary-yellow);
+}
+
+.stats { text-align: center; margin-bottom: 2rem; font-size: 1.2rem; color: var(--gray); }
+
+.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header>
+    <div class="inst-name">MathTrainer</div>
+    <div class="inst-dept">Eje Números - PAES M1</div>
+    <div class="sub-title">Módulo: Propiedades de las Potencias</div>
+    <div class="credit-line">Asistido por MaxMath 🤖</div>
+  </header>
+
+  <div id="screen-welcome" class="card">
+    <h2 style="margin-bottom:1rem; color:var(--primary-blue);">Entrenador Dinámico de Potencias</h2>
+    <p style="color:var(--gray); margin-bottom:2rem; line-height: 1.6;">
+      Se generará una sesión aleatoria con 10 desafíos interactivos.<br>
+      Abarca multiplicación, división, potencias de potencias, exponentes negativos y fraccionarios.<br>
+      Incluye pistas orientadas por MaxMath y retroalimentación inmediata.<br>
+      <strong>Exigencia: 60% para nota 4.0</strong>
+    </p>
+    <button class="btn btn-primary" onclick="start()">Iniciar Entrenamiento</button>
+  </div>
+
+  <div id="screen-quiz" class="card hidden">
+    <div class="q-meta">
+      <span class="q-badge" id="q-idx">PREGUNTA 1 / 10</span>
+      <span id="q-type" style="color:var(--primary-yellow)">POTENCIAS</span>
+    </div>
+
+    <div class="data-grid" id="data-grid"></div>
+
+    <div class="question-text" id="q-text"></div>
+
+    <div class="hint-box" id="hint-box">
+      <strong>💡 Pista de MaxMath:</strong> <span id="hint-text"></span>
+    </div>
+
+    <div class="input-group">
+      <input type="number" id="ans-input" class="answer-input" step="any" placeholder="Valor numérico">
+      <div class="unit-tag" id="unit-tag">Ans</div>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+
+    <button id="btn-check" class="btn btn-primary" onclick="check()">Validar Respuesta</button>
+    <button id="btn-next" class="btn btn-primary hidden" onclick="next()">Siguiente Desafío</button>
+  </div>
+
+  <div id="screen-res" class="card hidden">
+    <h2 style="text-align:center">RESULTADO DE LA SESIÓN</h2>
+    <div class="nota-display" id="nota-res">1.0</div>
+    <div class="stats" id="stats-res"></div>
+    <button class="btn btn-primary" onclick="location.reload()">Nuevo Entrenamiento</button>
+  </div>
+</div>
+
+<script>
+let currentQ = 0, score = 0, questions = [];
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function generateQuestions() {
+    questions = [];
+    // Generador dinámico basado en 10 plantillas maestras que varían sus parámetros numéricos
+    
+    // 1. Multiplicación de potencias de igual base: a^n * a^m = a^(n+m)
+    let base1 = getRandomInt(2, 5);
+    let n1 = getRandomInt(2, 4);
+    let m1 = getRandomInt(2, 4);
+    let ans1 = Math.pow(base1, n1 + m1);
+    questions.push({
+        type: 'IGUAL BASE (MULTIPLICACIÓN)',
+        text: `Evalúa y calcula el valor numérico de la expresión: $${base1}^{${n1}} \\cdot ${base1}^{${m1}}$`,
+        hint: `Conserva la base ($${base1}$) y suma los exponentes: $${n1} + ${m1}$.`,
+        data: [{l: 'Base', v: base1}, {l: 'Exp 1', v: n1}, {l: 'Exp 2', v: m1}],
+        ans: ans1,
+        unit: 'Valor'
+    });
+
+    // 2. División de potencias de igual base: a^n / a^m = a^(n-m)
+    let base2 = getRandomInt(2, 4);
+    let n2 = getRandomInt(5, 7);
+    let m2 = getRandomInt(2, 4);
+    let ans2 = Math.pow(base2, n2 - m2);
+    questions.push({
+        type: 'IGUAL BASE (DIVISIÓN)',
+        text: `Calcula el valor de la división de potencias: $\\frac{${base2}^{${n2}}}{${base2}^{${m2}}}$`,
+        hint: `Conserva la base y resta los exponentes en el orden numerador menos denominador: $${n2} - ${m2}$.`,
+        data: [{l: 'Base', v: base2}, {l: 'Numerador', v: n2}, {l: 'Denominador', v: m2}],
+        ans: ans2,
+        unit: 'Valor'
+    });
+
+    // 3. Potencia de una potencia: (a^n)^m = a^(n*m)
+    let base3 = getRandomInt(2, 3);
+    let n3 = getRandomInt(2, 3);
+    let m3 = 2;
+    let ans3 = Math.pow(base3, n3 * m3);
+    questions.push({
+        type: 'POTENCIA DE POTENCIA',
+        text: `Calcula el valor de la expresión con paréntesis: $(${base3}^{${n3}})^{${m3}}$`,
+        hint: `Multiplica los exponentes entre sí: $${n3} \\cdot ${m3}$.`,
+        data: [{l: 'Base', v: base3}, {l: 'Exp Interno', v: n3}, {l: 'Exp Externo', v: m3}],
+        ans: ans3,
+        unit: 'Valor'
+    });
+
+    // 4. Multiplicación de igual exponente: a^n * b^n = (a*b)^n
+    let a4 = getRandomInt(2, 4);
+    let b4 = getRandomInt(2, 3);
+    let n4 = 3;
+    let ans4 = Math.pow(a4 * b4, n4);
+    questions.push({
+        type: 'IGUAL EXPONENTE (MULTIPLICACIÓN)',
+        text: `Halla el resultado de: $${a4}^{${n4}} \\cdot ${b4}^{${n4}}$`,
+        hint: `Agrupa las bases bajo el mismo exponente común: $(${a4} \\cdot ${b4})^{${n4}}$.`,
+        data: [{l: 'Base A', v: a4}, {l: 'Base B', v: b4}, {l: 'Exponente', v: n4}],
+        ans: ans4,
+        unit: 'Valor'
+    });
+
+    // 5. Exponente cero: a^0 = 1
+    let base5 = getRandomInt(12, 99);
+    let ans5 = 1;
+    questions.push({
+        type: 'EXPONENTE CERO',
+        text: `Calcula el valor numérico de la expresión: $(${base5})^{0}$`,
+        hint: `Todo número distinto de cero elevado a exponente 0 es siempre igual a 1.`,
+        data: [{l: 'Base', v: base5}, {l: 'Exponente', v: 0}],
+        ans: ans5,
+        unit: 'Valor'
+    });
+
+    // 6. Exponente negativo entero: a^(-n) = 1 / a^n (o fracción decimal exacta)
+    let base6 = 2;
+    let n6 = 3;
+    let ans6 = 1 / Math.pow(base6, n6);
+    questions.push({
+        type: 'EXPONENTE NEGATIVO',
+        text: `Calcula el valor decimal o fraccionario exacto de: $${base6}^{-${n6}}$`,
+        hint: `Invierte la base transformándola en fracción: $\\frac{1}{${base6}^{${n6}}}$.`,
+        data: [{l: 'Base', v: base6}, {l: 'Exponente', v: `-${n6}`}],
+        ans: parseFloat(ans6.toFixed(4)),
+        unit: 'Decimal'
+    });
+
+    // 7. Combinación de operaciones elementales de potencias
+    let base7 = 2;
+    // (2^3 * 2^2) / 2^4 = 2^(3+2-4) = 2^1 = 2
+    let ans7 = 2;
+    questions.push({
+        type: 'OPERATORIA COMBINADA',
+        text: `Resuelve y encuentra el valor de: $\\frac{2^{3} \\cdot 2^{2}}{2^{4}}$`,
+        hint: `Primero suma los exponentes arriba ($3+2$), y luego resta el exponente de abajo.`,
+        data: [{l: 'Estructura', v: 'Combinada'}],
+        ans: ans7,
+        unit: 'Valor'
+    });
+
+    // 8. Ecuación exponencial simple
+    let base8 = 3;
+    let ans8 = 3; // 3^x = 27 -> x = 3
+    questions.push({
+        type: 'ECUACIÓN EXPONENCIAL',
+        text: `Determina el valor de $x$ que satisface la igualdad: $${base8}^{x} = 27$`,
+        hint: `Busca cuántas veces debes multiplicar $${base8}$ por sí mismo para obtener 27.`,
+        data: [{l: 'Ecuación', v: `${base8}^x = 27`}],
+        ans: ans8,
+        unit: 'x'
+    });
+
+    // 9. Potencia con base fraccionaria
+    let num9 = 2, den9 = 3, exp9 = 2;
+    let ans9 = Math.pow(num9/den9, exp9);
+    questions.push({
+        type: 'BASE FRACCIONARIA',
+        text: `Calcula el valor decimal redondeado a dos cifras de: $(\\frac{${num9}}{${den9}})^{${exp9}}$`,
+        hint: `Eleva tanto el numerador como el denominador al exponente $${exp9}$.`,
+        data: [{l: 'Numerador', v: num9}, {l: 'Denominador', v: den9}, {l: 'Exponente', v: exp9}],
+        ans: parseFloat(ans9.toFixed(2)),
+        unit: 'Decimal'
+    });
+
+    // 10. Descomposición y propiedad distributiva de potencias
+    let ans10 = 8; // 2^3
+    questions.push({
+        type: 'ANÁLISIS CONCEPTUAL',
+        text: `Si $2^{x} = 4$, ¿cuál es el valor de la expresión $2^{x+1}$?`,
+        hint: `Propiedad de suma en el exponente: $2^{x} \\cdot 2^{1}$. Sustituye el valor de $2^x$.`,
+        data: [{l: 'Condición', v: '2^x = 4'}],
+        ans: ans10,
+        unit: 'Valor'
+    });
+}
+
+function start() {
+    generateQuestions();
+    document.getElementById('screen-welcome').classList.add('hidden');
+    document.getElementById('screen-quiz').classList.remove('hidden');
+    render();
+}
+
+function render() {
+    const q = questions[currentQ];
+    document.getElementById('q-idx').textContent = `PREGUNTA ${currentQ + 1} / 10`;
+    document.getElementById('q-type').textContent = q.type;
+    document.getElementById('q-text').innerHTML = q.text;
+    document.getElementById('hint-text').textContent = q.hint;
+    document.getElementById('unit-tag').textContent = q.unit;
+    document.getElementById('ans-input').value = '';
+    document.getElementById('feedback').style.display = 'none';
+    document.getElementById('btn-check').classList.remove('hidden');
+    document.getElementById('btn-next').classList.add('hidden');
+    
+    const grid = document.getElementById('data-grid');
+    grid.innerHTML = q.data.map(d => `<div class="data-chip"><div class="dc-label">${d.l}</div><div class="dc-value">${d.v}</div></div>`).join('');
+}
+
+function check() {
+    const userAns = parseFloat(document.getElementById('ans-input').value);
+    const q = questions[currentQ];
+    const isCorrect = Math.abs(userAns - q.ans) < 0.05;
+
+    const fb = document.getElementById('feedback');
+    fb.style.display = 'block';
+    fb.style.background = isCorrect ? 'rgba(46,204,113,0.2)' : 'rgba(231,76,60,0.2)';
+    fb.style.color = isCorrect ? '#2ecc71' : '#ff4444';
+    fb.innerHTML = isCorrect ? '¡CORRECTO! Excelente aplicación conceptual.' : `INCORRECTO. El valor esperado era: ${q.ans}`;
+
+    if(isCorrect) score++;
+    document.getElementById('btn-check').classList.add('hidden');
+    document.getElementById('btn-next').classList.remove('hidden');
+}
+
+function next() {
+    currentQ++;
+    if(currentQ < 10) render();
+    else showResults();
+}
+
+function showResults() {
+    document.getElementById('screen-quiz').classList.add('hidden');
+    document.getElementById('screen-res').classList.remove('hidden');
+    
+    const logro = (score / 10) * 100;
+    let nota = score < 6 ? (score / 6) * 3 + 1 : ((score - 6) / 4) * 3 + 4;
+    
+    document.getElementById('nota-res').textContent = nota.toFixed(1);
+    document.getElementById('stats-res').innerHTML = `Nivel de Logro: ${logro}%<br>Respuestas Correctas: ${score} de 10`;
+}
+</script>
+</body>
+</html>
