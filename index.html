@@ -1,672 +1,851 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MathTrainer - Módulo Potencias PAES</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-<script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$', '$$'], ['\\[', '\\]']]
-    }
-  };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<style>
-:root {
-  --primary-blue: #00d2ff;
-  --primary-yellow: #f1c40f;
-  --bg-dark: #0b0f19;
-  --panel: #131b2e;
-  --white: #ffffff;
-  --gray: #8892b0;
-  --green: #2ecc71;
-  --red: #e74c3c;
-  --border: rgba(0, 210, 255, 0.3);
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg-dark);
-  color: var(--white);
-  font-family: 'Rajdhani', sans-serif;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#app {
-  width: 100%;
-  max-width: 850px;
-  padding: 2rem 1rem;
-}
-
-header {
-  text-align: center;
-  border-bottom: 3px solid var(--primary-blue);
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-}
-
-.inst-name {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 2.8rem;
-  font-weight: 900;
-  margin-bottom: 0.2rem;
-  color: var(--primary-blue);
-  letter-spacing: 2px;
-}
-
-.inst-dept {
-  font-size: 1rem;
-  letter-spacing: 0.25em;
-  color: var(--primary-yellow);
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-}
-
-.sub-title {
-  font-size: 1.2rem;
-  color: var(--white);
-  font-weight: 600;
-  margin-top: 0.5rem;
-  text-transform: uppercase;
-}
-
-.credit-line {
-  font-size: 0.85rem;
-  color: var(--gray);
-  margin-top: 0.4rem;
-  font-style: italic;
-}
-
-.card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.q-meta {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.8rem;
-}
-
-.q-badge { background: var(--primary-blue); color: #000; font-weight: 700; padding: 0.4rem 0.8rem; border-radius: 4px; }
-
-.question-text {
-  font-size: 1.35rem;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
-  border-left: 4px solid var(--primary-blue);
-  padding-left: 1rem;
-}
-
-.hint-box {
-  background: rgba(0, 210, 255, 0.08);
-  border: 1px dashed var(--primary-blue);
-  padding: 0.8rem;
-  margin-bottom: 1.5rem;
-  border-radius: 4px;
-  font-size: 0.95rem;
-  color: #79c0ff;
-}
-
-/* Estilo de Alternativas PAES */
-.options-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  margin-bottom: 1.5rem;
-}
-
-.option-btn {
-  background: #1a233a;
-  border: 2px solid #2a3a5e;
-  padding: 1rem 1.2rem;
-  color: white;
-  font-size: 1.2rem;
-  font-family: 'Share Tech Mono', monospace;
-  text-align: left;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.option-btn:hover:not(:disabled) {
-  border-color: var(--primary-blue);
-  background: #202c4c;
-}
-
-.option-letter {
-  background: var(--primary-yellow);
-  color: #000;
-  font-weight: 700;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1rem;
-}
-
-.option-btn.selected {
-  border-color: var(--primary-blue);
-  background: rgba(0, 210, 255, 0.15);
-}
-
-.option-btn.correct {
-  border-color: var(--green) !important;
-  background: rgba(46, 204, 113, 0.25) !important;
-}
-
-.option-btn.incorrect {
-  border-color: var(--red) !important;
-  background: rgba(231, 76, 60, 0.25) !important;
-}
-
-.feedback {
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: 4px;
-  font-weight: 600;
-  display: none;
-}
-
-.btn {
-  width: 100%;
-  padding: 1rem;
-  font-family: 'Orbitron';
-  font-weight: 700;
-  text-transform: uppercase;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  transition: 0.3s;
-}
-
-.btn-primary { background: var(--primary-blue); color: #000; }
-.btn-primary:hover { background: #00b0d4; }
-
-.nota-display {
-  font-family: 'Orbitron';
-  font-size: 5rem;
-  text-align: center;
-  margin: 1rem 0;
-  color: var(--primary-yellow);
-}
-
-.stats { text-align: center; margin-bottom: 2rem; font-size: 1.2rem; color: var(--gray); }
-.hidden { display: none; }
-
-.btn-hint {
-  background: transparent;
-  border: 1px dashed var(--primary-blue);
-  color: var(--primary-blue);
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  margin-bottom: 1rem;
-  transition: all 0.2s ease;
-}
-
-.btn-hint:hover {
-  background: rgba(0, 210, 255, 0.1);
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaxMath - Desafío de Potencias PAES M1</title>
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --accent: #06b6d4;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --error: #ef4444;
+            --streak: #f59e0b;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            box-sizing: border-box;
+            margin: 1rem;
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        h1, h2 { color: var(--primary); margin-top: 0; }
+        p { color: var(--text-muted); line-height: 1.5; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+            margin-top: 0.75rem;
+        }
+        .btn-secondary:hover { background-color: #cbd5e1; }
+        .rules-box {
+            background: #f1f5f9;
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .hud-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            background: #f8fafc;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .hud-streak { color: var(--streak); }
+        .math-expression {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: #eef2ff;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .options-grid {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .option-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 0.85rem 1rem;
+            text-align: left;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-main);
+        }
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: var(--success);
+            color: #065f46;
+        }
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: var(--error);
+            color: #991b1b;
+        }
+        .feedback-container {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+        .hint-box {
+            margin-top: 1rem;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #b45309;
+            display: none;
+        }
+        .medals-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+            justify-content: center;
+        }
+        .medal-badge {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #b45309;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+        }
+        th { color: var(--primary); font-weight: 600; }
+        .avatar-hint {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            background: #e0f2fe;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: #0369a1;
+        }
+    </style>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
-<div id="app">
-  <header>
-    <div class="inst-name">MathTrainer</div>
-    <div class="inst-dept">Eje Números - Simulador PAES M1</div>
-    <div class="sub-title">Módulo: Propiedades de las Potencias</div>
-    <div class="credit-line">Asistido por MaxMath 🤖</div>
-  </header>
+<div class="container">
+    <!-- PANTALLA 1: INICIO -->
+    <div id="screen-home" class="screen active">
+        <h1>MaxMath Trainer</h1>
+        <p>Módulo exclusivo de entrenamiento en **Propiedades de Potencias** (Nivel PAES M1).</p>
+        
+        <div class="rules-box">
+            <strong>Dinámica de juego:</strong>
+            <ul>
+                <li>Cada partida consta de <strong>10 preguntas 100% aleatorias</strong> de potencias.</li>
+                <li>Sistema de <strong>Rachas</strong>: Acumula aciertos consecutivos para multiplicar tu nivel de enfoque.</li>
+                <li>Gana <strong>Medallas</strong> especiales según tus logros y desempeño.</li>
+                <li>Pistas ocultas y realimentación paso a paso inmediata si te equivocas.</li>
+            </ul>
+        </div>
 
-  <div id="screen-welcome" class="card">
-    <h2 style="margin-bottom:1rem; color:var(--primary-blue);">Entrenador Interactivo Tipo PAES</h2>
-    <p style="color:var(--gray); margin-bottom:2rem; line-height: 1.6;">
-      Evaluación de 10 preguntas con formato de selección múltiple (A, B, C, D).<br>
-      Banco de 12 tipos de ejercicios: se eligen 10 al azar y en orden distinto cada vez.<br>
-      Incluye retroalimentación inmediata y pistas orientadoras.<br>
-      <strong>Exigencia: 60% para nota 4.0</strong>
-    </p>
-    <button class="btn btn-primary" onclick="start()">Comenzar Simulación</button>
-  </div>
+        <div class="form-group">
+            <label for="student-name">Nombre del estudiante:</label>
+            <input type="text" id="student-name" placeholder="Ej. Carlos Soto" autocomplete="off">
+        </div>
 
-  <div id="screen-quiz" class="card hidden">
-    <div class="q-meta">
-      <span class="q-badge" id="q-idx">PREGUNTA 1 / 10</span>
-      <span id="q-type" style="color:var(--primary-yellow)">POTENCIAS</span>
+        <button class="btn" onclick="startGame()">Iniciar Módulo de Potencias</button>
+        <button class="btn btn-secondary" onclick="showRanking()">Ver Ranking de Resultados</button>
     </div>
 
-    <div class="question-text" id="q-text"></div>
+    <!-- PANTALLA 2: JUEGO -->
+    <div id="screen-game" class="screen">
+        <div class="question-header">
+            <span id="q-counter">Pregunta 1 de 10</span>
+            <span id="player-display">Jugador: -</span>
+        </div>
 
-    <button type="button" class="btn-hint" id="btn-hint" onclick="toggleHint()">💡 Mostrar pista</button>
-    <div class="hint-box hidden" id="hint-box">
-      <strong>💡 Pista de MaxMath:</strong> <span id="hint-text"></span>
+        <div class="hud-stats">
+            <div>Puntaje: <span id="hud-score">0</span></div>
+            <div class="hud-streak">🔥 Racha: <span id="hud-streak">0</span></div>
+        </div>
+
+        <div class="avatar-hint">
+            <span>🤖 <strong>MaxMath:</strong> ¡Mantén la racha activa analizando con calma cada propiedad!</span>
+        </div>
+
+        <div class="math-expression" id="q-text">Cargando expresión...</div>
+
+        <div class="options-grid" id="options-container"></div>
+
+        <button class="btn btn-secondary" id="btn-hint" onclick="toggleHint()">💡 Ver Pista Oculta</button>
+        <div class="hint-box" id="hint-content"></div>
+
+        <div class="feedback-container" id="feedback-box">
+            <p id="feedback-text" style="margin: 0 0 1rem 0; font-weight: 600;"></p>
+            <button class="btn" id="btn-next" onclick="nextQuestion()">Siguiente Pregunta</button>
+        </div>
     </div>
 
-    <!-- Contenedor de alternativas estilo PAES -->
-    <div class="options-container" id="options-container"></div>
+    <!-- PANTALLA 3: RESULTADOS Y LOGROS -->
+    <div id="screen-results" class="screen">
+        <h1>¡Entrenamiento Finalizado!</h1>
+        <p id="final-score-text" style="font-size: 1.1rem; font-weight: bold; color: var(--primary);"></p>
+        
+        <h3>Medallas obtenidas en esta sesión:</h3>
+        <div class="medals-container" id="session-medals"></div>
+        
+        <button class="btn" onclick="returnHome()">Volver al Inicio</button>
+        <button class="btn btn-secondary" onclick="showRanking()">Ver Ranking General</button>
+    </div>
 
-    <div id="feedback" class="feedback"></div>
-
-    <button id="btn-next" class="btn btn-primary hidden" onclick="next()">Siguiente Pregunta</button>
-  </div>
-
-  <div id="screen-res" class="card hidden">
-    <h2 style="text-align:center">RESULTADO DE LA SIMULACIÓN</h2>
-    <div class="nota-display" id="nota-res">1.0</div>
-    <div class="stats" id="stats-res"></div>
-    <button class="btn btn-primary" onclick="location.reload()">Nueva Simulación</button>
-  </div>
+    <!-- PANTALLA 4: RANKING -->
+    <div id="screen-ranking" class="screen">
+        <h2>Resumen de Ranking</h2>
+        <p>Historial de puntajes y medallas acumuladas.</p>
+        <div id="ranking-list-container">
+            <p style="text-align: center; color: var(--text-muted);">No hay registros guardados todavía.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="returnHome()">Volver al Inicio</button>
+    </div>
 </div>
 
 <script>
-let currentQ = 0, score = 0, questions = [];
-let isAnswered = false;
+    let state = {
+        name: "",
+        questions: [],
+        currentIndex: 0,
+        score: 0,
+        streak: 0,
+        maxStreak: 0,
+        currentQuestionObj: null,
+        answered: false,
+        medalsEarned: []
+    };
 
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function shuffle(array) {
-    let currentIndex = array.length, randomIndex;
-    while (currentIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    // Devuelve `count` elementos distintos (sin repetir) de un arreglo, en orden aleatorio.
+    function pickDistinct(array, count) {
+        return shuffle(array.slice()).slice(0, count);
     }
-    return array;
-}
 
-function gcd(a, b) {
-    a = Math.abs(a); b = Math.abs(b);
-    while (b) { [a, b] = [b, a % b]; }
-    return a || 1;
-}
-
-// Convierte num/den en un string LaTeX reducido (fracción o entero)
-function fracDisplay(num, den) {
-    if (den < 0) { num = -num; den = -den; }
-    const g = gcd(num, den);
-    num = num / g; den = den / g;
-    if (den === 1) return `${num}`;
-    if (num < 0) return `-\\frac{${-num}}{${den}}`;
-    return `\\frac{${num}}{${den}}`;
-}
-
-function roundKey(v) { return Math.round(v * 1e6) / 1e6; }
-
-// Construye 4 alternativas ÚNICAS (1 correcta + 3 distractores), evitando colisiones numéricas
-function makeOptions(correctValue, correctDisplay, distractorCandidates) {
-    const used = new Set([roundKey(correctValue)]);
-    const picked = [];
-    for (const d of distractorCandidates) {
-        const key = roundKey(d.value);
-        if (!used.has(key)) {
-            used.add(key);
-            picked.push(d);
-        }
-        if (picked.length === 3) break;
+    function pick(array) {
+        return array[Math.floor(Math.random() * array.length)];
     }
-    let offset = 1;
-    while (picked.length < 3) {
-        const fv = correctValue + offset;
-        const key = roundKey(fv);
-        if (!used.has(key)) {
-            used.add(key);
-            picked.push({ value: fv, display: `${fv}` });
+
+    // Arma 4 opciones numéricas sin duplicados: la correcta + distractores únicos,
+    // rellenando con valores de respaldo si algún candidato coincide con otro.
+    function buildNumericOptions(correct, candidates, formatFn) {
+        formatFn = formatFn || (v => `${v}`);
+        let used = new Set([correct]);
+        let opts = [{ text: formatFn(correct), correct: true }];
+        for (const c of candidates) {
+            if (opts.length >= 4) break;
+            if (!used.has(c)) { used.add(c); opts.push({ text: formatFn(c), correct: false }); }
         }
-        offset++;
+        let step = 1;
+        while (opts.length < 4) {
+            let f = correct + step * 3 + 1;
+            if (!used.has(f)) { used.add(f); opts.push({ text: formatFn(f), correct: false }); }
+            step++;
+        }
+        return shuffle(opts);
     }
-    const all = [
-        { value: correctValue, display: correctDisplay, isCorrect: true },
-        ...picked.map(p => ({ ...p, isCorrect: false }))
-    ];
-    return shuffle(all);
-}
 
-// ---------- BANCO DE PREGUNTAS ----------
+    // ---------- Tipos originales ----------
 
-function tMulSameBase() {
-    const base = getRandomInt(2, 5);
-    const n = getRandomInt(2, 4), m = getRandomInt(2, 4);
-    const expSum = n + m;
-    const correctValue = Math.pow(base, expSum);
-    const distractors = [
-        { value: Math.pow(base, n * m), display: `${Math.pow(base, n * m)}` },
-        { value: Math.pow(base * 2, expSum), display: `${Math.pow(base * 2, expSum)}` },
-        { value: Math.pow(base, Math.abs(n - m)), display: `${Math.pow(base, Math.abs(n - m))}` }
-    ];
-    return {
-        type: 'IGUAL BASE (MULTIPLICACIÓN)',
-        text: `Evalúa y calcula el valor de la expresión: \\[${base}^{${n}} \\cdot ${base}^{${m}}\\]`,
-        hint: `Conserva la base (${base}) y suma los exponentes: ${n} + ${m}.`,
-        correctValue, correctDisplay: `${correctValue}`, distractors
-    };
-}
-
-function tDivSameBase() {
-    const base = getRandomInt(2, 4);
-    const m = getRandomInt(2, 3);
-    const n = m + getRandomInt(2, 3);
-    const exp = n - m;
-    const correctValue = Math.pow(base, exp);
-    const distractors = [
-        { value: Math.pow(base, n + m), display: `${Math.pow(base, n + m)}` },
-        { value: Math.pow(base, n * m), display: `${Math.pow(base, n * m)}` },
-        { value: Math.pow(base - 1, exp), display: `${Math.pow(base - 1, exp)}` }
-    ];
-    return {
-        type: 'IGUAL BASE (DIVISIÓN)',
-        text: `Calcula el valor de la división: \\[\\frac{${base}^{${n}}}{${base}^{${m}}}\\]`,
-        hint: `Conserva la base y resta los exponentes: ${n} - ${m}.`,
-        correctValue, correctDisplay: `${correctValue}`, distractors
-    };
-}
-
-function tPowerOfPower() {
-    const base = getRandomInt(2, 3);
-    const n = getRandomInt(2, 3), m = getRandomInt(2, 3);
-    const correctValue = Math.pow(base, n * m);
-    const distractors = [
-        { value: Math.pow(base, n + m), display: `${Math.pow(base, n + m)}` },
-        { value: Math.pow(base * 2, m), display: `${Math.pow(base * 2, m)}` },
-        { value: Math.pow(base, Math.abs(n - m)), display: `${Math.pow(base, Math.abs(n - m))}` }
-    ];
-    return {
-        type: 'POTENCIA DE POTENCIA',
-        text: `Calcula el valor de: \\[(${base}^{${n}})^{${m}}\\]`,
-        hint: `Multiplica los exponentes entre sí: ${n} \\cdot ${m}.`,
-        correctValue, correctDisplay: `${correctValue}`, distractors
-    };
-}
-
-function tZeroExp() {
-    const base = getRandomInt(15, 80);
-    return {
-        type: 'EXPONENTE CERO',
-        text: `Calcula el valor numérico de: \\[${base}^{0}\\]`,
-        hint: `Todo número distinto de cero elevado a exponente 0 es igual a 1.`,
-        correctValue: 1, correctDisplay: '1',
-        distractors: [
-            { value: 0, display: '0' },
-            { value: base, display: `${base}` },
-            { value: base * 2, display: `${base * 2}` }
-        ]
-    };
-}
-
-function tNegExp() {
-    const base = getRandomInt(2, 4);
-    const n = getRandomInt(2, 3);
-    const denom = Math.pow(base, n);
-    const correctValue = 1 / denom;
-    const distractors = [
-        { value: -denom, display: `-${denom}` },
-        { value: denom, display: `${denom}` },
-        { value: 1 / (base * n), display: fracDisplay(1, base * n) }
-    ];
-    return {
-        type: 'EXPONENTE NEGATIVO',
-        text: `Calcula el valor exacto de: \\[${base}^{-${n}}\\]`,
-        hint: `Invierte la base transformándola en fracción: \\frac{1}{${base}^{${n}}}.`,
-        correctValue, correctDisplay: fracDisplay(1, denom), distractors
-    };
-}
-
-function tSameExpMul() {
-    const a = getRandomInt(2, 4), b = getRandomInt(2, 4);
-    const n = getRandomInt(2, 3);
-    const correctValue = Math.pow(a * b, n);
-    const distractors = [
-        { value: Math.pow(a + b, n), display: `${Math.pow(a + b, n)}` },
-        { value: Math.pow(a * b, n * 2), display: `${Math.pow(a * b, n * 2)}` },
-        { value: a * Math.pow(b, n), display: `${a * Math.pow(b, n)}` }
-    ];
-    return {
-        type: 'IGUAL EXPONENTE (MULTIPLICACIÓN)',
-        text: `Halla el resultado de: \\[${a}^{${n}} \\cdot ${b}^{${n}}\\]`,
-        hint: `Agrupa las bases bajo el mismo exponente común: (${a} \\cdot ${b})^{${n}}.`,
-        correctValue, correctDisplay: `${correctValue}`, distractors
-    };
-}
-
-function tSameExpDiv() {
-    const a = getRandomInt(4, 9), b = getRandomInt(2, 3);
-    const n = 2;
-    const num = Math.pow(a, n), den = Math.pow(b, n);
-    const correctValue = num / den;
-    const distractors = [
-        { value: Math.pow(a - b, n), display: `${Math.pow(a - b, n)}` },
-        { value: num / Math.pow(b, n + 1), display: fracDisplay(num, Math.pow(b, n + 1)) },
-        { value: num * den, display: `${num * den}` }
-    ];
-    return {
-        type: 'IGUAL EXPONENTE (DIVISIÓN)',
-        text: `Calcula el valor de: \\[\\left(\\frac{${a}}{${b}}\\right)^{${n}}\\]`,
-        hint: `Eleva numerador y denominador por separado: \\frac{${a}^{${n}}}{${b}^{${n}}}.`,
-        correctValue, correctDisplay: fracDisplay(num, den), distractors
-    };
-}
-
-function tCombined() {
-    const base = getRandomInt(2, 3);
-    const p = getRandomInt(2, 4), q = getRandomInt(1, 3), r = getRandomInt(1, 3);
-    const expResult = Math.abs(p + q - r);
-    const correctValue = Math.pow(base, expResult);
-    const distractors = [
-        { value: Math.pow(base, p + q + r), display: `${Math.pow(base, p + q + r)}` },
-        { value: Math.pow(base, Math.max(p * q - r, 0)), display: `${Math.pow(base, Math.max(p * q - r, 0))}` },
-        { value: Math.pow(base, expResult + 1), display: `${Math.pow(base, expResult + 1)}` }
-    ];
-    return {
-        type: 'OPERATORIA COMBINADA',
-        text: `Resuelve y encuentra el valor de: \\[\\frac{${base}^{${p}} \\cdot ${base}^{${q}}}{${base}^{${r}}}\\]`,
-        hint: `Suma los exponentes del numerador y resta el exponente del denominador: ${p} + ${q} - ${r}.`,
-        correctValue, correctDisplay: `${correctValue}`, distractors
-    };
-}
-
-function tEquation() {
-    const base = [2, 3, 5][getRandomInt(0, 2)];
-    const x = getRandomInt(2, 4);
-    const value = Math.pow(base, x);
-    const distractors = [
-        { value: x + 1, display: `${x + 1}` },
-        { value: Math.max(x - 1, 1), display: `${Math.max(x - 1, 1)}` },
-        { value: value, display: `${value}` }
-    ];
-    return {
-        type: 'ECUACIÓN EXPONENCIAL',
-        text: `Determina el valor de $x$ en la igualdad: \\[${base}^{x} = ${value}\\]`,
-        hint: `¿Cuántas veces debes multiplicar ${base} por sí mismo para obtener ${value}?`,
-        correctValue: x, correctDisplay: `${x}`, distractors
-    };
-}
-
-function tFracBase() {
-    const den = getRandomInt(2, 4);
-    const exp = getRandomInt(2, 3);
-    const denPow = Math.pow(den, exp);
-    const correctValue = 1 / denPow;
-    const distractors = [
-        { value: 1 / (den * exp), display: fracDisplay(1, den * exp) },
-        { value: denPow, display: `${denPow}` },
-        { value: 1 / Math.pow(den, exp - 1), display: fracDisplay(1, Math.pow(den, exp - 1)) }
-    ];
-    return {
-        type: 'BASE FRACCIONARIA',
-        text: `Calcula el valor de: \\[\\left(\\frac{1}{${den}}\\right)^{${exp}}\\]`,
-        hint: `Eleva tanto el numerador como el denominador al exponente ${exp}.`,
-        correctValue, correctDisplay: fracDisplay(1, denPow), distractors
-    };
-}
-
-function tConceptual() {
-    const base = [2, 3][getRandomInt(0, 1)];
-    const k = getRandomInt(2, 4);
-    const c = getRandomInt(1, 2);
-    const givenValue = Math.pow(base, k);
-    const correctValue = Math.pow(base, k + c);
-    const distractors = [
-        { value: givenValue + c, display: `${givenValue + c}` },
-        { value: givenValue * c, display: `${givenValue * c}` },
-        { value: Math.pow(givenValue, c), display: `${Math.pow(givenValue, c)}` }
-    ];
-    const expTxt = c === 1 ? `${base}^{x+1}` : `${base}^{x+${c}}`;
-    return {
-        type: 'ANÁLISIS CONCEPTUAL',
-        text: `Si $${base}^{x} = ${givenValue}$, ¿cuál es el valor de \\[${expTxt}\\]?`,
-        hint: `Descompón como ${base}^{x} \\cdot ${base}^{${c}}$ y sustituye el valor conocido.`,
-        correctValue, correctDisplay: `${correctValue}`, distractors
-    };
-}
-
-function tRootAsPower() {
-    const opts = [[4, 2], [9, 2], [16, 2], [25, 2], [36, 2], [8, 3], [27, 3]];
-    const [radicand, idx] = opts[getRandomInt(0, opts.length - 1)];
-    const correctValue = Math.round(Math.pow(radicand, 1 / idx));
-    const distractors = [
-        { value: Math.max(radicand - correctValue, 0), display: `${Math.max(radicand - correctValue, 0)}` },
-        { value: correctValue * idx, display: `${correctValue * idx}` },
-        { value: radicand, display: `${radicand}` }
-    ];
-    const rootExp = `\\frac{1}{${idx}}`;
-    return {
-        type: 'RAÍZ COMO POTENCIA',
-        text: `Calcula el valor de: \\[${radicand}^{${rootExp}}\\]`,
-        hint: `Una raíz ${idx === 2 ? 'cuadrada' : 'cúbica'} equivale a elevar a exponente ${rootExp}.`,
-        correctValue, correctDisplay: `${correctValue}`, distractors
-    };
-}
-
-const QUESTION_BANK = [
-    tMulSameBase, tDivSameBase, tPowerOfPower, tZeroExp, tNegExp,
-    tSameExpMul, tSameExpDiv, tCombined, tEquation, tFracBase,
-    tConceptual, tRootAsPower
-];
-
-function generateQuestions() {
-    const chosenTemplates = shuffle([...QUESTION_BANK]).slice(0, 10);
-    questions = chosenTemplates.map(fn => {
-        const q = fn();
-        const options = makeOptions(q.correctValue, q.correctDisplay, q.distractors);
-        return { type: q.type, text: q.text, hint: q.hint, options };
-    });
-}
-
-function start() {
-    generateQuestions();
-    document.getElementById('screen-welcome').classList.add('hidden');
-    document.getElementById('screen-quiz').classList.remove('hidden');
-    render();
-}
-
-function toggleHint() {
-    const hintBox = document.getElementById('hint-box');
-    const btn = document.getElementById('btn-hint');
-    const showing = hintBox.classList.toggle('hidden') === false;
-    btn.textContent = showing ? '💡 Ocultar pista' : '💡 Mostrar pista';
-}
-
-function render() {
-    isAnswered = false;
-    const q = questions[currentQ];
-    document.getElementById('q-idx').textContent = `PREGUNTA ${currentQ + 1} / 10`;
-    document.getElementById('q-type').textContent = q.type;
-    document.getElementById('q-text').innerHTML = q.text;
-    document.getElementById('hint-text').textContent = q.hint;
-    document.getElementById('hint-box').classList.add('hidden');
-    document.getElementById('btn-hint').textContent = '💡 Mostrar pista';
-    document.getElementById('feedback').style.display = 'none';
-    document.getElementById('btn-next').classList.add('hidden');
-
-    const container = document.getElementById('options-container');
-    const letters = ['A', 'B', 'C', 'D'];
-
-    container.innerHTML = q.options.map((opt, idx) => `
-        <button class="option-btn" onclick="selectOption(${idx})">
-            <span class="option-letter">${letters[idx]}</span>
-            <span>$${opt.display}$</span>
-        </button>
-    `).join('');
-
-    if (window.MathJax) {
-        MathJax.typesetPromise();
+    // Tipo 1: Factorización de potencias en fracciones
+    function makeTipo1(base1) {
+        let correct1 = Math.pow(base1, 2) - 1;
+        return {
+            text: `¿Cuál es el valor de la expresión $\\frac{${base1}^{n+2} - ${base1}^n}{${base1}^n}$?`,
+            hint: `Propiedad de potencias: Factoriza el numerador por $${base1}^n$ y simplifica el cociente.`,
+            options: shuffle([
+                { text: `${correct1}`, correct: true },
+                { text: `${correct1 + base1}`, correct: false },
+                { text: `${Math.pow(base1, 2)}`, correct: false },
+                { text: `${base1}`, correct: false }
+            ]),
+            feedback: `Paso a paso: Se factoriza el numerador como ${base1}^n(${base1}^2 - 1). Al dividir entre ${base1}^n, queda ${base1}^2 - 1 = ${Math.pow(base1, 2)} - 1 = ${correct1}.`
+        };
     }
-}
+    function genTipo1() { return makeTipo1(pick([2, 3, 5])); }
 
-function selectOption(index) {
-    if (isAnswered) return;
-    isAnswered = true;
-
-    const q = questions[currentQ];
-    const buttons = document.querySelectorAll('.option-btn');
-    let correctChosen = false;
-
-    buttons.forEach((btn, idx) => {
-        btn.disabled = true;
-        if (q.options[idx].isCorrect) {
-            btn.classList.add('correct');
-        }
-        if (idx === index && !q.options[idx].isCorrect) {
-            btn.classList.add('incorrect');
-        }
-        if (idx === index && q.options[idx].isCorrect) {
-            correctChosen = true;
-        }
-    });
-
-    if (correctChosen) score++;
-
-    const fb = document.getElementById('feedback');
-    fb.style.display = 'block';
-    fb.style.background = correctChosen ? 'rgba(46,204,113,0.2)' : 'rgba(231,76,60,0.2)';
-    fb.style.color = correctChosen ? '#2ecc71' : '#ff4444';
-    fb.innerHTML = correctChosen ? '¡CORRECTO! Alternativa seleccionada acertada.' : 'INCORRECTO. La alternativa destacada en verde era la correcta.';
-
-    document.getElementById('btn-next').classList.remove('hidden');
-
-    if (window.MathJax) {
-        MathJax.typesetPromise();
+    // Tipo 2: Ecuación exponencial y valorización
+    function makeTipo2(base2, xVal) {
+        let basePow = Math.pow(base2, xVal);
+        let targetVal = Math.pow(base2, xVal + 2) - basePow;
+        return {
+            text: `Si $${base2}^x = ${basePow}$, ¿cuál es el valor de $${base2}^{x+2} - ${base2}^x$?`,
+            hint: `Descompón el término $${base2}^{x+2}$ como el producto $${base2}^x \\cdot ${base2}^2$.`,
+            options: shuffle([
+                { text: `${targetVal}`, correct: true },
+                { text: `${targetVal + basePow}`, correct: false },
+                { text: `${targetVal - 4}`, correct: false },
+                { text: `${targetVal * 2}`, correct: false }
+            ]),
+            feedback: `Paso a paso: Sustituimos sabiendo que $${base2}^x = ${basePow}$ y $${base2}^{x+2} = ${basePow} \\cdot 4$. Operando: $(${basePow} \\cdot 4) - ${basePow} = ${targetVal}.`
+        };
     }
-}
+    function genTipo2() {
+        let base2 = pick([2, 3]);
+        let xVal = pick([2, 3]);
+        return makeTipo2(base2, xVal);
+    }
 
-function next() {
-    currentQ++;
-    if (currentQ < 10) render();
-    else showResults();
-}
+    // Tipo 3: Exponente negativo en fracciones
+    function makeTipo3(num3) {
+        let den3 = num3 + 1;
+        return {
+            text: `¿Cuál es el resultado de resolver $\\left( \\frac{${num3}}{${den3}} \\right)^{-2}$?`,
+            hint: `Invierte la base de la fracción cambiando el signo del exponente a positivo.`,
+            options: shuffle([
+                { text: `\\(\\frac{${Math.pow(den3, 2)}}{${Math.pow(num3, 2)}}\\)`, correct: true },
+                { text: `\\(\\frac{${num3 * 2}}{${den3 * 2}}\\)`, correct: false },
+                { text: `-\\(\\frac{${Math.pow(num3, 2)}}{${Math.pow(den3, 2)}}\\)`, correct: false },
+                { text: `\\(\\frac{${Math.pow(num3, 2)}}{${Math.pow(den3, 2)}} \\)`, correct: false }
+            ]),
+            feedback: `Paso a paso: Al invertir la fracción, el exponente pasa a ser positivo: $\\left(\\frac{${den3}}{${num3}}\\right)^2 = \\frac{${Math.pow(den3, 2)}}{${Math.pow(num3, 2)}} = ${Math.pow(den3, 2) / Math.pow(num3, 2)}$.`
+        };
+    }
+    function genTipo3() { return makeTipo3(pick([1, 2])); }
 
-function showResults() {
-    document.getElementById('screen-quiz').classList.add('hidden');
-    document.getElementById('screen-res').classList.remove('hidden');
+    // Tipo 4: Suma y división de potencias de igual base
+    function makeTipo4(base4) {
+        let exp4 = Math.floor(Math.random() * 3) + 3;
+        let correct4 = 2 * Math.pow(base4, 2);
+        return {
+            text: `¿Cuál es el valor de $\\frac{${base4}^{${exp4}} + ${base4}^{${exp4}}}{${base4}^{${exp4 - 2}}}$?`,
+            hint: `Agrupa los términos semejantes del numerador ($A + A = 2A$) y luego resta exponentes en la división.`,
+            options: shuffle([
+                { text: `${correct4}`, correct: true },
+                { text: `${Math.pow(base4, 2)}`, correct: false },
+                { text: `${correct4 * 2}`, correct: false },
+                { text: `${correct4 + base4}`, correct: false }
+            ]),
+            feedback: `Paso a paso: El numerador equivale a $2 \\cdot ${base4}^{${exp4}}$. Al dividir por el denominador, se restan exponentes: $2 \\cdot ${base4}^2 = ${correct4}$.`
+        };
+    }
+    function genTipo4() { return makeTipo4(pick([2, 3, 4])); }
 
-    const logro = (score / 10) * 100;
-    let nota = score < 6 ? (score / 6) * 3 + 1 : ((score - 6) / 4) * 3 + 4;
+    // Tipo 5: Descomposición de suma en exponentes
+    function makeTipo5(base5, add5) {
+        return {
+            text: `Si $M = ${base5}^{x + ${add5}}$, ¿a qué expresión es equivalente $M$?`,
+            hint: `Aplica la propiedad del producto de potencias con igual base en sentido inverso.`,
+            options: shuffle([
+                { text: `$${Math.pow(base5, add5)} \\cdot ${base5}^x$`, correct: true },
+                { text: `$${base5}^x + ${Math.pow(base5, add5)}$`, correct: false },
+                { text: `$${base5}^x \\cdot ${add5}$`, correct: false },
+                { text: `$${base5} \\cdot 3^x$`, correct: false }
+            ]),
+            feedback: `Paso a paso: Por propiedad, $${base5}^{x + ${add5}} = ${base5}^x \\cdot ${base5}^{${add5}} = ${Math.pow(base5, add5)} \\cdot ${base5}^x$.`
+        };
+    }
+    function genTipo5() {
+        let base5 = pick([2, 5]);
+        let add5 = pick([1, 2, 3]);
+        return makeTipo5(base5, add5);
+    }
 
-    document.getElementById('nota-res').textContent = nota.toFixed(1);
-    document.getElementById('stats-res').innerHTML = `Nivel de Logro: ${logro}%<br>Respuestas Correctas: ${score} de 10`;
-}
+    // ---------- Tipos nuevos (basados en ejercicios_potencias_y_raices.docx) ----------
+
+    // Base negativa elevada a un exponente (signo según paridad)
+    function genTipoNeg() {
+        let b = pick([2, 3, 4, 5]);
+        let n = pick([2, 3, 4]);
+        let raw = Math.pow(b, n);
+        let correct = (n % 2 === 0) ? raw : -raw;
+        let candidates = [-correct, b * n, -(b * n), raw];
+        return {
+            text: `¿Cuál es el valor de la expresión $(-${b})^{${n}}$?`,
+            hint: `Una base negativa elevada a un exponente par da un resultado positivo; a un exponente impar da un resultado negativo.`,
+            options: buildNumericOptions(correct, shuffle(candidates)),
+            feedback: `Paso a paso: como el exponente ${n} es ${n % 2 === 0 ? 'par' : 'impar'}, $(-${b})^{${n}} = ${n % 2 === 0 ? '' : '-'}${b}^{${n}} = ${correct}$.`
+        };
+    }
+
+    // Problema de contexto: producto de tres factores iguales = base al cubo
+    function genTipoWordCube() {
+        let b = pick([3, 4, 5, 6]);
+        let historias = [
+            `Una empresa de logística reparte ${b} cajas a cada una de ${b} sucursales, y cada caja contiene ${b} kilogramos de mercancía. ¿Cuál es el total de kilogramos repartidos?`,
+            `Un panadero hornea ${b} bandejas, cada bandeja tiene ${b} moldes y cada molde produce ${b} panes. ¿Cuántos panes se obtienen en total?`,
+            `Un edificio tiene ${b} pisos, cada piso tiene ${b} departamentos y cada departamento tiene ${b} ventanas. ¿Cuántas ventanas tiene el edificio en total?`
+        ];
+        let correct = Math.pow(b, 3);
+        let candidates = [b * 3, Math.pow(b, 2), Math.pow(3, b)];
+        return {
+            text: pick(historias),
+            hint: `Al multiplicar tres factores iguales a ${b}, el resultado equivale a elevar ${b} al cubo.`,
+            options: buildNumericOptions(correct, shuffle(candidates)),
+            feedback: `Paso a paso: se multiplican tres factores iguales: $${b} \\cdot ${b} \\cdot ${b} = ${b}^3 = ${correct}$.`
+        };
+    }
+
+    // Identificar el paso con error algebraico (potencia de una potencia: se multiplican, no se suman)
+    function genTipoError() {
+        let [p, q] = pickDistinct([2, 3, 5, 7], 2);
+        let e = pick([2, 3]);
+        let m = pick([2, 3]);
+        return {
+            text: `Un estudiante simplifica $(${p} \\cdot ${q}^{${e}})^{${m}}$ en los siguientes pasos:<br><br>` +
+                `Paso 1: Aplica la potencia de un producto: $${p}^{${m}} \\cdot (${q}^{${e}})^{${m}}$.<br>` +
+                `Paso 2: Aplica la potencia de una potencia: $${p}^{${m}} \\cdot ${q}^{${e} + ${m}}$.<br>` +
+                `Paso 3: Concluye que el resultado final es $${p}^{${m}} \\cdot ${q}^{${e + m}}$.<br><br>` +
+                `¿En cuál paso se cometió un error algebraico?`,
+            hint: `Recuerda que en la potencia de una potencia los exponentes se multiplican, no se suman: $(a^e)^m = a^{e \\cdot m}$.`,
+            options: shuffle([
+                { text: `En el Paso 1`, correct: false },
+                { text: `En el Paso 2`, correct: true },
+                { text: `En el Paso 3`, correct: false },
+                { text: `No se cometió ningún error`, correct: false }
+            ]),
+            feedback: `Paso a paso: en el Paso 2 se debió multiplicar los exponentes, no sumarlos: $(${q}^{${e}})^{${m}} = ${q}^{${e * m}}$, y no $${q}^{${e + m}}$.`
+        };
+    }
+
+    // Evaluación numérica: b^2 + 1/c^-2 = b^2 + c^2
+    function genTipoEval() {
+        let b = pick([8, 10, 12, 14]);
+        let c = pick([3, 4, 5, 6]);
+        let correct = b * b + c * c;
+        let candidates = [b * b - c * c, Math.pow(b * c, 2), b * c * 2, b * b + c];
+        return {
+            text: `¿Cuál es el valor numérico de la expresión $${b}^2 + \\frac{1}{${c}^{-2}}$?`,
+            hint: `Recuerda que dividir por una potencia negativa equivale a multiplicar por la potencia positiva: $\\frac{1}{c^{-2}} = c^2$.`,
+            options: buildNumericOptions(correct, shuffle(candidates)),
+            feedback: `Paso a paso: $\\frac{1}{${c}^{-2}} = ${c}^2 = ${c * c}$. Luego, $${b}^2 + ${c}^2 = ${b * b} + ${c * c} = ${correct}$.`
+        };
+    }
+
+    // Crecimiento exponencial: valor inicial por razón elevada al número de periodos
+    function genTipoGrowth() {
+        let p0 = pick([20, 30, 50, 80]);
+        let f = pick([2, 3]);
+        let h = pick([3, 4]);
+        return {
+            text: `Un cultivo inicia con ${p0} microorganismos y se ${f === 2 ? 'duplica' : 'triplica'} cada hora. ¿Cuántos microorganismos habrá transcurridas ${h} horas?`,
+            hint: `El crecimiento exponencial se expresa como valor inicial multiplicado por la razón elevada al número de periodos transcurridos.`,
+            options: shuffle([
+                { text: `$${p0} \\cdot ${f}^{${h}}$`, correct: true },
+                { text: `$(${p0} \\cdot ${f})^{${h}}$`, correct: false },
+                { text: `$${p0} \\cdot ${f}^{${h + 1}}$`, correct: false },
+                { text: `$${p0}^{${h}} \\cdot ${f}$`, correct: false }
+            ]),
+            feedback: `Paso a paso: cada hora se multiplica por ${f}, así que tras ${h} horas el total es $${p0} \\cdot ${f}^{${h}}$.`
+        };
+    }
+
+    // Comparación de magnitudes: 10^a vs 10^b
+    function genTipoMagnitude() {
+        let opcionesUnidades = [
+            ['gigabyte', 9, 'kilobyte', 3],
+            ['terabyte', 12, 'megabyte', 6],
+            ['megabyte', 6, 'byte', 0],
+            ['terabyte', 12, 'kilobyte', 3]
+        ];
+        let [large, a, small, b] = pick(opcionesUnidades);
+        let correct = a - b;
+        let candidates = [a + b, a, correct + 1, correct - 1];
+        return {
+            text: `Sabiendo que un ${large} equivale a $10^{${a}}$ bytes y un ${small} equivale a $10^{${b}}$ bytes, ¿cuántas veces es mayor la capacidad de un ${large} en comparación con un ${small}?`,
+            hint: `Al dividir potencias de igual base, se restan los exponentes.`,
+            options: buildNumericOptions(correct, candidates, v => `$10^{${v}}$`),
+            feedback: `Paso a paso: $\\frac{10^{${a}}}{10^{${b}}} = 10^{${a}-${b}} = 10^{${correct}}$.`
+        };
+    }
+
+    // Crecimiento geométrico de dinero: día 1 = d, razón r, día n
+    function genTipoMoney() {
+        let d = pick([2, 4, 5, 8]);
+        let r = pick([2, 3]);
+        let n = pick([4, 5, 6]);
+        let correct = d * Math.pow(r, n - 1);
+        let candidates = [d * Math.pow(r, n), d * r * n, d * Math.pow(r, n - 2)];
+        return {
+            text: `Sofía recibe un aporte diario que se ${r === 2 ? 'duplica' : 'triplica'} respecto al anterior. Si el primer día recibe \\$${d}, ¿cuánto se le entregará el día ${n}?`,
+            hint: `El monto del día n se calcula como el valor inicial multiplicado por la razón elevada a $(n-1)$.`,
+            options: buildNumericOptions(correct, shuffle(candidates), v => `\\$${v}`),
+            feedback: `Paso a paso: el día ${n} corresponde a $${d} \\cdot ${r}^{${n - 1}} = ${correct}$.`
+        };
+    }
+
+    // Sustitución en fórmula: b·b^y evaluado en un valor de y
+    function genTipoSubstitute() {
+        let b = pick([2, 3, 4]);
+        let Y = pick([2, 3, 4]);
+        let correct = Math.pow(b, Y + 1);
+        let candidates = [Math.pow(b, Y), b * Y, Math.pow(b, Y) + b];
+        return {
+            text: `Una empresa proyecta que al cabo de $y$ años tendrá construidas $${b} \\cdot ${b}^y$ viviendas. ¿Cuántas viviendas se proyecta tener construidas al cabo de ${Y} años?`,
+            hint: `Sustituye el valor de la variable en la expresión y simplifica usando la propiedad de potencias de igual base.`,
+            options: buildNumericOptions(correct, shuffle(candidates)),
+            feedback: `Paso a paso: $${b} \\cdot ${b}^{${Y}} = ${b}^{${Y + 1}} = ${correct}$.`
+        };
+    }
+
+    // Interpretación de variables en una fórmula exponencial (conceptual)
+    function genTipoMeaning() {
+        let base = pick([2, 3]);
+        let intervalo = pick([30, 60]);
+        return {
+            text: `Un software realiza respaldos automáticos cada ${intervalo} minutos, ${base === 2 ? 'duplicando' : 'triplicando'} los archivos guardados. Tras $h$ horas, el total de archivos es $p \\cdot ${base}^h$ (con $p$ y $h$ enteros positivos). ¿Qué afirmación es verdadera?`,
+            hint: `Piensa en qué representa cada símbolo antes de que comience a transcurrir el tiempo ($h = 0$).`,
+            options: shuffle([
+                { text: `$p$ es la cantidad inicial de archivos antes de iniciar el proceso.`, correct: true },
+                { text: `$${base}^h$ indica cuántas veces se ha reducido el número de archivos.`, correct: false },
+                { text: `$p$ es la cantidad de archivos creados en la última hora.`, correct: false },
+                { text: `$h$ es el tiempo exacto en que el disco alcanza su capacidad máxima.`, correct: false }
+            ]),
+            feedback: `Paso a paso: al evaluar en $h = 0$, el total es $p \\cdot ${base}^0 = p$, por lo tanto $p$ representa la cantidad inicial de archivos.`
+        };
+    }
+
+    // Simplificación con exponentes negativos: (x^-a + x^-b)·x^c
+    function genTipoSimplifyNeg() {
+        let [a, b] = pickDistinct([1, 2, 3, 4], 2);
+        let c = Math.max(a, b) + pick([1, 2]);
+        let ea = c - a, eb = c - b;
+        return {
+            text: `¿Cuál de las siguientes expresiones es equivalente a simplificar el producto $(x^{-${a}} + x^{-${b}}) \\cdot x^{${c}}$?`,
+            hint: `Distribuye el producto y usa la propiedad de multiplicación de potencias de igual base: $x^m \\cdot x^n = x^{m+n}$.`,
+            options: shuffle([
+                { text: `$x^{${ea}} + x^{${eb}}$`, correct: true },
+                { text: `$x^{${-(a + b)}}$`, correct: false },
+                { text: `$x^{${ea}} - x^{${eb}}$`, correct: false },
+                { text: `$x^{${c - a - b}}$`, correct: false }
+            ]),
+            feedback: `Paso a paso: $x^{-${a}} \\cdot x^{${c}} = x^{${ea}}$ y $x^{-${b}} \\cdot x^{${c}} = x^{${eb}}$, por lo tanto la suma es $x^{${ea}} + x^{${eb}}$.`
+        };
+    }
+
+    // Conceptual fijo: expresión siempre par para cualquier entero k
+    function genTipoAlwaysEven() {
+        return {
+            text: `Si $k$ es un número entero cualquiera, ¿cuál de las siguientes expresiones resulta ser siempre un número entero par?`,
+            hint: `Piensa en el producto de dos números enteros consecutivos: siempre es par.`,
+            options: shuffle([
+                { text: `$k^3 - k^2$`, correct: false },
+                { text: `$k^2 + k$`, correct: true },
+                { text: `$3^k + 2^k$`, correct: false },
+                { text: `$5^k - 3^k$`, correct: false }
+            ]),
+            feedback: `Paso a paso: $k^2 + k = k(k+1)$ es el producto de dos enteros consecutivos, y uno de ellos siempre es par, por lo que el producto siempre es par.`
+        };
+    }
+
+    // Conceptual fijo: identificar ecuación exponencial
+    function genTipoIdentifyExp() {
+        return {
+            text: `¿Cuál de las siguientes ecuaciones corresponde a una ecuación de tipo exponencial?`,
+            hint: `En una ecuación exponencial, la incógnita está en el exponente.`,
+            options: shuffle([
+                { text: `$x^5 = 32$`, correct: false },
+                { text: `$5^x = 125$`, correct: true },
+                { text: `$x^2 - 5x + 6 = 0$`, correct: false },
+                { text: `$\\sqrt{x-1} = 2$`, correct: false }
+            ]),
+            feedback: `Paso a paso: en $5^x = 125$ la incógnita $x$ está en el exponente, lo que la hace una ecuación exponencial (a diferencia de las otras, que son de tipo potencial, cuadrática e irracional).`
+        };
+    }
+
+    // Banco de generadores: cada partida toma 10 al azar, sin repetir tipo.
+    const allGenerators = [
+        genTipo1, genTipo2, genTipo3, genTipo4, genTipo5,
+        genTipoNeg, genTipoWordCube, genTipoError, genTipoEval, genTipoGrowth,
+        genTipoMagnitude, genTipoMoney, genTipoSubstitute, genTipoMeaning,
+        genTipoSimplifyNeg, genTipoAlwaysEven, genTipoIdentifyExp
+    ];
+
+    function generateRandomPotencyQuestions() {
+        let chosen = pickDistinct(allGenerators, 10);
+        return shuffle(chosen.map(gen => gen()));
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function switchScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function startGame() {
+        const nameInput = document.getElementById('student-name').value.trim();
+        if (!nameInput) {
+            alert('Por favor, ingresa tu nombre para iniciar el módulo.');
+            return;
+        }
+        state.name = nameInput;
+        state.questions = generateRandomPotencyQuestions();
+        state.currentIndex = 0;
+        state.score = 0;
+        state.streak = 0;
+        state.maxStreak = 0;
+        state.answered = false;
+        state.medalsEarned = [];
+
+        document.getElementById('player-display').innerText = `Jugador: ${state.name}`;
+        updateHUD();
+        switchScreen('screen-game');
+        loadQuestion();
+    }
+
+    function updateHUD() {
+        document.getElementById('hud-score').innerText = state.score;
+        document.getElementById('hud-streak').innerText = state.streak;
+    }
+
+    function loadQuestion() {
+        state.answered = false;
+        state.currentQuestionObj = state.questions[state.currentIndex];
+        
+        document.getElementById('q-counter').innerText = `Pregunta ${state.currentIndex + 1} de 10`;
+        document.getElementById('q-text').innerHTML = state.currentQuestionObj.text;
+        
+        const optContainer = document.getElementById('options-container');
+        optContainer.innerHTML = '';
+        
+        state.currentQuestionObj.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = opt.text;
+            btn._optData = opt;
+            btn.onclick = () => selectOption(opt.correct, btn);
+            optContainer.appendChild(btn);
+        });
+
+        document.getElementById('hint-content').style.display = 'none';
+        document.getElementById('hint-content').innerText = state.currentQuestionObj.hint;
+        document.getElementById('feedback-box').style.display = 'none';
+
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById('q-text'), optContainer]);
+        }
+    }
+
+    function toggleHint() {
+        const hintBox = document.getElementById('hint-content');
+        hintBox.style.display = hintBox.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function selectOption(isCorrect, selectedBtn) {
+        if (state.answered) return;
+        state.answered = true;
+
+        const options = document.querySelectorAll('.option-btn');
+        options.forEach(btn => {
+            btn.disabled = true;
+            if (btn._optData && btn._optData.correct) {
+                btn.classList.add('correct');
+            }
+        });
+
+        if (isCorrect) {
+            selectedBtn.classList.add('correct');
+            state.score++;
+            state.streak++;
+            if (state.streak > state.maxStreak) {
+                state.maxStreak = state.streak;
+            }
+            document.getElementById('feedback-text').innerHTML = `✅ ¡Correcto! Racha actual: ${state.streak} 🔥`;
+            document.getElementById('feedback-text').style.color = "var(--success)";
+        } else {
+            selectedBtn.classList.add('incorrect');
+            state.streak = 0; // Rompe la racha estilo Volta Trainer
+            document.getElementById('feedback-text').innerHTML = `❌ Incorrecto (Racha rota).<br><br><strong>Realimentación paso a paso:</strong> ${state.currentQuestionObj.feedback}`;
+            document.getElementById('feedback-text').style.color = "var(--error)";
+        }
+
+        updateHUD();
+        document.getElementById('feedback-box').style.display = 'block';
+
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById('feedback-box')]);
+        }
+    }
+
+    function nextQuestion() {
+        state.currentIndex++;
+        if (state.currentIndex < state.questions.length) {
+            loadQuestion();
+        } else {
+            finishGame();
+        }
+    }
+
+    function evaluateMedals() {
+        state.medalsEarned = [];
+        if (state.score === 10) {
+            state.medalsEarned.push("🏆 Maestro de Potencias (10/10)");
+        } else if (state.score >= 7) {
+            state.medalsEarned.push("🥈 Destacado en Álgebra (7+ aciertos)");
+        }
+
+        if (state.maxStreak >= 5) {
+            state.medalsEarned.push("⚡ Racha de Fuego (5+ aciertos seguidos)");
+        } else if (state.maxStreak >= 3) {
+            state.medalsEarned.push("🔥 Buen Ritmo (Racha de 3)");
+        }
+
+        if (state.medalsEarned.length === 0) {
+            state.medalsEarned.push("🌱 Aprendiz en Progreso");
+        }
+    }
+
+    function finishGame() {
+        evaluateMedals();
+        saveScoreToStorage();
+
+        document.getElementById('final-score-text').innerText = `${state.name}, obtuviste ${state.score} de 10 aciertos. Racha máxima: ${state.maxStreak} 🔥`;
+        
+        let medalsContainer = document.getElementById('session-medals');
+        medalsContainer.innerHTML = '';
+        state.medalsEarned.forEach(medal => {
+            let badge = document.createElement('div');
+            badge.className = 'medal-badge';
+            badge.innerText = medal;
+            medalsContainer.appendChild(badge);
+        });
+
+        switchScreen('screen-results');
+    }
+
+    function saveScoreToStorage() {
+        let history = JSON.parse(localStorage.getItem('maxmath_potencias_ranking') || '[]');
+        history.push({
+            name: state.name,
+            score: state.score,
+            maxStreak: state.maxStreak,
+            medals: [...state.medalsEarned],
+            date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+        });
+        history.sort((a, b) => b.score - a.score || b.maxStreak - a.maxStreak);
+        localStorage.setItem('maxmath_potencias_ranking', JSON.stringify(history));
+    }
+
+    function showRanking() {
+        let history = JSON.parse(localStorage.getItem('maxmath_potencias_ranking') || '[]');
+        let container = document.getElementById('ranking-list-container');
+        
+        if (history.length === 0) {
+            container.innerHTML = `<p style="text-align: center; color: var(--text-muted);">No hay registros guardados todavía.</p>`;
+        } else {
+            let html = `<table>
+                <thead>
+                    <tr><th>Estudiante</th><th>Puntaje</th><th>Racha Máx</th><th>Medallas</th></tr>
+                </thead>
+                <tbody>`;
+            history.forEach(item => {
+                let medalsStr = item.medals ? item.medals.join(', ') : '-';
+                html += `<tr>
+                    <td>${escapeHtml(item.name)}</td>
+                    <td><strong>${item.score}/10</strong></td>
+                    <td>🔥 ${item.maxStreak}</td>
+                    <td><small>${escapeHtml(medalsStr)}</small></td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+        switchScreen('screen-ranking');
+    }
+
+    function returnHome() {
+        document.getElementById('student-name').value = '';
+        switchScreen('screen-home');
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
 </script>
+
 </body>
 </html>
